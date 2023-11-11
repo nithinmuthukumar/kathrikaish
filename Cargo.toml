@@ -1,0 +1,14 @@
+[package]
+name = "kathrikaish"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+shrs = { git = "https://github.com/MrPicklePinosaur/shrs" }
+shrs_mux = { git = "https://github.com/MrPicklePinosaur/shrs" }
+shrs_command_timer = { git = "https://github.com/MrPicklePinosaur/shrs" }
+shrs_cd_tools = { git = "https://github.com/MrPicklePinosaur/shrs" }
+
+
