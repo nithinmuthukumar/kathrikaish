@@ -1,11 +1,19 @@
+use ::crossterm::style::Color;
+use shrs_cd_stack::CdStackPlugin;
+use shrs_command_timer::CommandTimerPlugin;
 use shrs_mux::MuxPlugin;
-use std::{path::PathBuf, process::Command};
+use shrs_output_capture::OutputCapturePlugin;
+use shrs_run_context::RunContextPlugin;
+use std::{fs, path::PathBuf, process::Command};
 
 use shrs::{
     anyhow,
+    history::FileBackedHistory,
+    keybindings,
     prelude::{
-        keybindings, styled, Alias, Context, Env, HookFn, Hooks, LineBuilder, LineCtx, LineMode,
-        Prompt, Runtime, Shell, StartupCtx, StyledBuf, Stylize,
+        builtin_cmdname_action, cmdname_action, cmdname_pred, styled, styled_buf::StyledBuf, Alias,
+        Builtins, Context, DefaultCompleter, DefaultMenu, Env, HookFn, Hooks, LineBuilder, LineCtx,
+        LineMode, Pred, Prompt, Rule, Runtime, Shell, StartupCtx, Stylize,
     },
     prompt::top_pwd,
     ShellBuilder,
@@ -18,7 +26,7 @@ impl Prompt for KPrompt {
     fn prompt_left(&self, line_ctx: &mut LineCtx) -> StyledBuf {
         let indicator = match line_ctx.mode() {
             LineMode::Insert => String::from("🍆").cyan(),
-            LineMode::Normal => String::from("🪝").yellow(),
+            LineMode::Normal => String::from(":").yellow(),
         };
 
         let home = std::env::var("HOME").unwrap();
@@ -37,34 +45,97 @@ impl Prompt for KPrompt {
 }
 
 fn main() {
+    // =-=-= Configuration directory =-=-=
+    // Initialize the directory we will be using to hold our configuration and metadata files
+    let config_dir = dirs::home_dir().unwrap().as_path().join(".config/shrs");
+    // also log when creating dir
+    // TODO ignore errors for now (we dont care if dir already exists)
+    fs::create_dir_all(config_dir.clone());
+
     let keybinding = keybindings! {|_sh,_ctx,_rt| "C-l"=>{Command::new("clear").spawn().unwrap() }};
     let alias = Alias::from_iter([("l", "ls"), ("g", "git"), ("v", "nvim")]);
     let mut env = Env::new();
     env.load().unwrap();
+    env.set("SHELL_NAME", "kathrikaish");
+
+    let builtins = Builtins::default();
+
+    // =-=-= Completion =-=-=
+    // Get list of binaries in path and initialize the completer to autocomplete command names
+    let path_string = env.get("PATH").unwrap().to_string();
+    let mut completer = DefaultCompleter::default();
+    completer.register(Rule::new(
+        Pred::new(cmdname_pred),
+        Box::new(cmdname_action(path_string)),
+    ));
+    completer.register(Rule::new(
+        Pred::new(cmdname_pred),
+        Box::new(builtin_cmdname_action(&builtins)),
+    ));
+
+    // =-=-= Menu =-=-=-=
+    let menu = DefaultMenu::new();
 
     let readline = LineBuilder::default()
-        .with_keybinding(keybinding)
         .with_prompt(KPrompt)
+        .with_completer(completer)
+        .with_menu(menu)
         .build()
         .expect("Could not build line");
 
     let startup_msg: HookFn<StartupCtx> = |_sh: &Shell,
-                                           _sh_ctx: &mut Context,
+                                           ctx: &mut Context,
                                            _sh_rt: &mut Runtime,
                                            _ctx: &StartupCtx|
      -> anyhow::Result<()> {
-        let welcome_str = "HI NITHIN";
-        println!("{welcome_str}");
+        let welcome_str = r#"
+    ██                                        
+  ██▒▒██                                      
+██▒▒▒▒██                                      
+████▒▒▒▒██  ██████                            
+  ██▒▒▒▒▒▒██▒▒▒▒▒▒██                          
+    ██▒▒▒▒▒▒▒▒██████                          
+  ██▒▒▒▒▒▒▒▒██▓▓▓▓▓▓██                        
+  ██▒▒████▒▒██▓▓▓▓▓▓▓▓██                      
+  ██▒▒██████▓▓▓▓▓▓▓▓▓▓▓▓████                  
+  ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████              
+  ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓▓▓██████        
+  ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓██      
+    ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓▓▓██    
+    ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓▓▓██  
+      ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓██  
+      ██████████▓▓▓▓▓▓▓ Hi Nithin ▓▓▒▒▒▒▒▒▓▓██
+        ██████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓██
+          ██████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓██
+            ██████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▓▓████
+              ██████████▓▓▓▓▓▓▓▓▓▓▒▒▒▒▓▓████  
+                ██████████▓▓▓▓▓▓▓▓▓▓▓▓██████  
+                  ████████████████████████    
+                    ████████████████████      
+                        ████████████          
+"#;
+        ctx.out.print_buf(styled!(@(dark_red)welcome_str))?;
         Ok(())
     };
+    // =-=-= History =-=-=
+    // Use history that writes to file on disk
+    let history_file = config_dir.as_path().join("history");
+    let history = FileBackedHistory::new(history_file).expect("Could not open history file");
+
     let mut hooks = Hooks::new();
     hooks.register(startup_msg);
 
     let shell = ShellBuilder::default()
         .with_readline(readline)
         .with_alias(alias)
-        .with_plugin(MuxPlugin)
         .with_hooks(hooks)
+        .with_keybinding(keybinding)
+        .with_history(history)
+        .with_plugin(MuxPlugin::new())
+        .with_plugin(OutputCapturePlugin)
+        .with_plugin(CommandTimerPlugin)
+        .with_plugin(RunContextPlugin::new())
+        .with_plugin(CdStackPlugin)
         .build()
         .expect("Could not build shell");
 

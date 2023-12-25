@@ -8,7 +8,16 @@ edition = "2021"
 [dependencies]
 shrs = { git = "https://github.com/MrPicklePinosaur/shrs" }
 shrs_mux = { git = "https://github.com/MrPicklePinosaur/shrs" }
-shrs_command_timer = { git = "https://github.com/MrPicklePinosaur/shrs" }
 shrs_cd_tools = { git = "https://github.com/MrPicklePinosaur/shrs" }
+shrs_output_capture = { git = "https://github.com/MrPicklePinosaur/shrs" }
+shrs_command_timer = { git = "https://github.com/MrPicklePinosaur/shrs" }
+shrs_run_context = { git = "https://github.com/MrPicklePinosaur/shrs" }
+shrs_cd_stack = { git = "https://github.com/MrPicklePinosaur/shrs" }
+shrs_file_logger = { git = "https://github.com/MrPicklePinosaur/shrs" }
+
+
+dirs = "5"
+
+crossterm = "0.26"
 
 
