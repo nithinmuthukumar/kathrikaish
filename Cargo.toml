@@ -14,6 +14,8 @@ shrs_command_timer = { git = "https://github.com/MrPicklePinosaur/shrs" }
 shrs_run_context = { git = "https://github.com/MrPicklePinosaur/shrs" }
 shrs_cd_stack = { git = "https://github.com/MrPicklePinosaur/shrs" }
 shrs_file_logger = { git = "https://github.com/MrPicklePinosaur/shrs" }
+shrs_insulter = { git = "https://github.com/nithinmuthukumar/shrs_insulter"}
+shrs_presence = { git = "https://github.com/nithinmuthukumar/shrs_presence"}
 
 
 dirs = "5"

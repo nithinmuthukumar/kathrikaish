@@ -1,8 +1,10 @@
 use ::crossterm::style::Color;
 use shrs_cd_stack::CdStackPlugin;
 use shrs_command_timer::CommandTimerPlugin;
+use shrs_insulter::InsulterPlugin;
 use shrs_mux::MuxPlugin;
 use shrs_output_capture::OutputCapturePlugin;
+use shrs_presence::PresencePlugin;
 use shrs_run_context::RunContextPlugin;
 use std::{fs, path::PathBuf, process::Command};
 
@@ -15,7 +17,7 @@ use shrs::{
         Builtins, Context, DefaultCompleter, DefaultMenu, Env, HookFn, Hooks, LineBuilder, LineCtx,
         LineMode, Pred, Prompt, Rule, Runtime, Shell, StartupCtx, Stylize,
     },
-    prompt::top_pwd,
+    prompt::{hostname, top_pwd},
     ShellBuilder,
 };
 
@@ -26,17 +28,16 @@ impl Prompt for KPrompt {
     fn prompt_left(&self, line_ctx: &mut LineCtx) -> StyledBuf {
         let indicator = match line_ctx.mode() {
             LineMode::Insert => String::from("🍆").cyan(),
-            LineMode::Normal => String::from(":").yellow(),
+            LineMode::Normal => String::from("💦").yellow(),
         };
 
-        let home = std::env::var("HOME").unwrap();
-        let mut wd = std::env::current_dir().unwrap();
-        if let Ok(p) = wd.strip_prefix(home) {
-            wd = PathBuf::from("~").join(p);
-        }
-        wd.pop();
+        // let home = std::env::var("HOME").unwrap();
+        // let mut wd = std::env::current_dir().unwrap();
+        // if let Ok(p) = wd.strip_prefix(home) {
+        //     wd = PathBuf::from(p);
+        // }
 
-        styled!(" ", @(red)wd.to_string_lossy().to_string()+"/", @(red,bold)top_pwd(), " ", indicator, " ")
+        styled!(@(blue)"╭─  ", @(blue,bold)top_pwd(), " ", @(blue)" master ", "\n",@(blue)"╰─ ", indicator," ")
     }
 
     fn prompt_right(&self, line_ctx: &mut LineCtx) -> StyledBuf {
@@ -88,32 +89,8 @@ fn main() {
                                            _sh_rt: &mut Runtime,
                                            _ctx: &StartupCtx|
      -> anyhow::Result<()> {
-        let welcome_str = r#"
-    ██                                        
-  ██▒▒██                                      
-██▒▒▒▒██                                      
-████▒▒▒▒██  ██████                            
-  ██▒▒▒▒▒▒██▒▒▒▒▒▒██                          
-    ██▒▒▒▒▒▒▒▒██████                          
-  ██▒▒▒▒▒▒▒▒██▓▓▓▓▓▓██                        
-  ██▒▒████▒▒██▓▓▓▓▓▓▓▓██                      
-  ██▒▒██████▓▓▓▓▓▓▓▓▓▓▓▓████                  
-  ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████              
-  ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓▓▓██████        
-  ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓██      
-    ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓▓▓██    
-    ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓▓▓██  
-      ████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓██  
-      ██████████▓▓▓▓▓▓▓ Hi Nithin ▓▓▒▒▒▒▒▒▓▓██
-        ██████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓██
-          ██████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓██
-            ██████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▓▓████
-              ██████████▓▓▓▓▓▓▓▓▓▓▒▒▒▒▓▓████  
-                ██████████▓▓▓▓▓▓▓▓▓▓▓▓██████  
-                  ████████████████████████    
-                    ████████████████████      
-                        ████████████          
-"#;
+        let welcome_str = format!("\n\n\t\tHello Nithin\n\n");
+
         ctx.out.print_buf(styled!(@(dark_red)welcome_str))?;
         Ok(())
     };
@@ -123,7 +100,7 @@ fn main() {
     let history = FileBackedHistory::new(history_file).expect("Could not open history file");
 
     let mut hooks = Hooks::new();
-    hooks.register(startup_msg);
+    hooks.insert(startup_msg);
 
     let shell = ShellBuilder::default()
         .with_readline(readline)
@@ -136,6 +113,8 @@ fn main() {
         .with_plugin(CommandTimerPlugin)
         .with_plugin(RunContextPlugin::new())
         .with_plugin(CdStackPlugin)
+        .with_plugin(InsulterPlugin::default())
+        .with_plugin(PresencePlugin)
         .build()
         .expect("Could not build shell");
 
