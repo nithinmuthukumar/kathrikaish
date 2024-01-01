@@ -37,7 +37,7 @@ impl Prompt for KPrompt {
         //     wd = PathBuf::from(p);
         // }
 
-        styled!(@(blue)"╭─  ", @(blue,bold)top_pwd(), " ", @(blue)" master ", "\n",@(blue)"╰─ ", indicator," ")
+        styled!(@(green)"╭─ ",@(blue)" ", @(blue,bold)top_pwd(), " ", @(yellow)" master ", "\n",@(green)"╰─ ", indicator," ")
     }
 
     fn prompt_right(&self, line_ctx: &mut LineCtx) -> StyledBuf {
@@ -53,9 +53,9 @@ fn main() {
     // TODO ignore errors for now (we dont care if dir already exists)
     fs::create_dir_all(config_dir.clone());
 
-    let keybinding = keybindings! {|_sh,_ctx,_rt| "C-l"=>{Command::new("clear").spawn().unwrap() }};
+    let keybinding = keybindings! {|_sh,_ctx,_rt| "C-l"=>("Clear the screen", {Command::new("clear").spawn().unwrap() })};
     let alias = Alias::from_iter([("l", "ls"), ("g", "git"), ("v", "nvim")]);
-    let mut env = Env::new();
+    let mut env = Env::default();
     env.load().unwrap();
     env.set("SHELL_NAME", "kathrikaish");
 
@@ -75,7 +75,7 @@ fn main() {
     ));
 
     // =-=-= Menu =-=-=-=
-    let menu = DefaultMenu::new();
+    let menu = DefaultMenu::default();
 
     let readline = LineBuilder::default()
         .with_prompt(KPrompt)
@@ -111,7 +111,7 @@ fn main() {
         .with_plugin(MuxPlugin::new())
         .with_plugin(OutputCapturePlugin)
         .with_plugin(CommandTimerPlugin)
-        .with_plugin(RunContextPlugin::new())
+        .with_plugin(RunContextPlugin::default())
         .with_plugin(CdStackPlugin)
         .with_plugin(InsulterPlugin::default())
         .with_plugin(PresencePlugin)
