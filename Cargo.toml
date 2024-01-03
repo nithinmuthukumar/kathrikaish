@@ -18,6 +18,7 @@ shrs_insulter = { git = "https://github.com/nithinmuthukumar/shrs_insulter"}
 shrs_presence = { git = "https://github.com/nithinmuthukumar/shrs_presence"}
 
 
+
 dirs = "5"
 
 crossterm = "0.26"

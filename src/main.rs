@@ -1,6 +1,10 @@
 use ::crossterm::style::Color;
 use shrs_cd_stack::CdStackPlugin;
-use shrs_command_timer::CommandTimerPlugin;
+use shrs_cd_tools::{
+    git::{self, commits_ahead_remote, commits_behind_remote, Git},
+    DirParsePlugin, DirParseState,
+};
+use shrs_command_timer::{CommandTimerPlugin, CommandTimerState};
 use shrs_insulter::InsulterPlugin;
 use shrs_mux::MuxPlugin;
 use shrs_output_capture::OutputCapturePlugin;
@@ -36,12 +40,38 @@ impl Prompt for KPrompt {
         // if let Ok(p) = wd.strip_prefix(home) {
         //     wd = PathBuf::from(p);
         // }
+        let git_branch = git::branch().map_or(String::new(), |s| format!(" {s} "));
+        let commits_behind = commits_behind_remote().map_or(String::new(), |s| {
+            if s == 0 {
+                String::new()
+            } else {
+                format!("⇣{s}")
+            }
+        });
 
-        styled!(@(green)"╭─ ",@(blue)" ", @(blue,bold)top_pwd(), " ", @(yellow)" master ", "\n",@(green)"╰─ ", indicator," ")
+        let commits_ahead = commits_ahead_remote().map_or(String::new(), |s| {
+            if s == 0 {
+                String::new()
+            } else {
+                format!("⇡{s}")
+            }
+        });
+
+        let git_info = git_branch + commits_behind.as_str() + commits_ahead.as_str();
+
+        styled!(@(green)"╭─ ",@(blue)" ", @(blue,bold)top_pwd(), " ", @(yellow)git_info, "\n",@(green)"╰─ ", indicator," ")
     }
 
     fn prompt_right(&self, line_ctx: &mut LineCtx) -> StyledBuf {
-        styled!()
+        let time_str = line_ctx
+            .ctx
+            .state
+            .get::<CommandTimerState>()
+            .and_then(|x| x.command_time())
+            .map(|x| format!("{x:?}"));
+        let error = line_ctx.rt.exit_status;
+
+        styled!("ERROR")
     }
 }
 
@@ -91,7 +121,7 @@ fn main() {
      -> anyhow::Result<()> {
         let welcome_str = format!("\n\n\t\tHello Nithin\n\n");
 
-        ctx.out.print_buf(styled!(@(dark_red)welcome_str))?;
+        ctx.out.print_buf(styled!(@(cyan)welcome_str))?;
         Ok(())
     };
     // =-=-= History =-=-=
@@ -115,6 +145,7 @@ fn main() {
         .with_plugin(CdStackPlugin)
         .with_plugin(InsulterPlugin::default())
         .with_plugin(PresencePlugin)
+        .with_plugin(DirParsePlugin::new())
         .build()
         .expect("Could not build shell");
 
