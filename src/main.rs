@@ -1,4 +1,5 @@
 use ::crossterm::style::Color;
+use clap::Parser;
 use shrs_cd_stack::CdStackPlugin;
 use shrs_cd_tools::{
     git::{self, commits_ahead_remote, commits_behind_remote, Git},
@@ -10,7 +11,7 @@ use shrs_mux::MuxPlugin;
 use shrs_output_capture::OutputCapturePlugin;
 use shrs_presence::PresencePlugin;
 use shrs_run_context::RunContextPlugin;
-use std::{fs, path::PathBuf, process::Command};
+use std::{fs, path::PathBuf, process::Command, thread::sleep, time::Duration};
 
 use shrs::{
     anyhow,
@@ -74,8 +75,13 @@ impl Prompt for KPrompt {
         styled!("ERROR")
     }
 }
+#[derive(Parser, Debug)]
+#[command(author="Nithin Muthukumar", version, about = "Nithin's shell", long_about = None)]
+struct Args {}
 
 fn main() {
+    let args = Args::parse();
+
     // =-=-= Configuration directory =-=-=
     // Initialize the directory we will be using to hold our configuration and metadata files
     let config_dir = dirs::home_dir().unwrap().as_path().join(".config/shrs");
@@ -87,7 +93,11 @@ fn main() {
     let alias = Alias::from_iter([("l", "ls"), ("g", "git"), ("v", "nvim")]);
     let mut env = Env::default();
     env.load().unwrap();
+    env.set("USER", "Nithin");
+
+    env.set("SHELL", "/Users/nithin/.cargo/bin/kathrikaish");
     env.set("SHELL_NAME", "kathrikaish");
+    env.set("SHELL_INFO", "kathrikaish");
 
     let builtins = Builtins::default();
 
@@ -119,9 +129,8 @@ fn main() {
                                            _sh_rt: &mut Runtime,
                                            _ctx: &StartupCtx|
      -> anyhow::Result<()> {
-        let welcome_str = format!("\n\n\t\tHello Nithin\n\n");
+        Command::new("neofetch").spawn()?.wait()?;
 
-        ctx.out.print_buf(styled!(@(cyan)welcome_str))?;
         Ok(())
     };
     // =-=-= History =-=-=
@@ -145,7 +154,7 @@ fn main() {
         .with_plugin(CdStackPlugin)
         .with_plugin(InsulterPlugin::default())
         .with_plugin(PresencePlugin)
-        .with_plugin(DirParsePlugin::new())
+        // .with_plugin(DirParsePlugin::new())
         .build()
         .expect("Could not build shell");
 
