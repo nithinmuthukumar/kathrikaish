@@ -1,4 +1,5 @@
 use ::crossterm::style::Color;
+use chrono::Local;
 use clap::Parser;
 use shrs_cd_stack::CdStackPlugin;
 use shrs_cd_tools::{
@@ -8,7 +9,7 @@ use shrs_cd_tools::{
 use shrs_command_timer::{CommandTimerPlugin, CommandTimerState};
 use shrs_insulter::InsulterPlugin;
 use shrs_mux::MuxPlugin;
-use shrs_output_capture::OutputCapturePlugin;
+use shrs_output_capture::{OutputCapturePlugin, OutputCaptureState};
 use shrs_presence::PresencePlugin;
 use shrs_run_context::RunContextPlugin;
 use std::{fs, path::PathBuf, process::Command, thread::sleep, time::Duration};
@@ -69,10 +70,36 @@ impl Prompt for KPrompt {
             .state
             .get::<CommandTimerState>()
             .and_then(|x| x.command_time())
-            .map(|x| format!("{x:?}"));
-        let error = line_ctx.rt.exit_status;
+            .map(|x| {
+                if x.as_secs() < 1 {
+                    String::new()
+                } else {
+                    format!("{:?}s", x.as_secs())
+                }
+            });
+        let status = line_ctx
+            .ctx
+            .state
+            .get::<OutputCaptureState>()
+            .unwrap()
+            .last_output
+            .status
+            .code()
+            .unwrap_or(-1);
 
-        styled!("ERROR")
+        //Command time in seconds, if it is longer than 0.5 seconds
+        //Project Context
+        //
+
+        //COLOR NOT PRINTING
+        let command_status = if status == 0 {
+            styled!(@(green)"")
+        } else {
+            styled!(@(red)status.to_string())
+        };
+        let local_time = Local::now();
+        let formatted_time = local_time.format("%-I:%M %p").to_string();
+        styled!(command_status, " ", @(blue)time_str," ",formatted_time, " ",@(green)" ─╮","\n",@(green)"─╯")
     }
 }
 #[derive(Parser, Debug)]
@@ -150,7 +177,7 @@ fn main() {
         .with_plugin(OutputCapturePlugin)
         .with_plugin(CommandTimerPlugin)
         .with_plugin(RunContextPlugin::default())
-        .with_plugin(CdStackPlugin)
+        // .with_plugin(CdStackPlugin)
         .with_plugin(InsulterPlugin::default())
         .with_plugin(PresencePlugin)
         // .with_plugin(DirParsePlugin::new())
