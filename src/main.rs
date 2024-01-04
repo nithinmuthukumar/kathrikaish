@@ -97,7 +97,6 @@ fn main() {
 
     env.set("SHELL", "/Users/nithin/.cargo/bin/kathrikaish");
     env.set("SHELL_NAME", "kathrikaish");
-    env.set("SHELL_INFO", "kathrikaish");
 
     let builtins = Builtins::default();
 
