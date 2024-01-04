@@ -99,6 +99,7 @@ impl Prompt for KPrompt {
         };
         let local_time = Local::now();
         let formatted_time = local_time.format("%-I:%M %p").to_string();
+        //KEY LOGGER
         styled!(command_status, " ", @(blue)time_str," ",formatted_time, " ",@(green)" ─╮","\n",@(green)"─╯")
     }
 }
