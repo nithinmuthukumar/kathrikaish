@@ -31,7 +31,7 @@ struct KPrompt;
 
 #[allow(unused_variables)]
 impl Prompt for KPrompt {
-    fn prompt_left(&self, line_ctx: &mut LineCtx) -> StyledBuf {
+    fn prompt_left(&self, line_ctx: &LineCtx) -> StyledBuf {
         let indicator = match line_ctx.mode() {
             LineMode::Insert => String::from("🍆").cyan(),
             LineMode::Normal => String::from("💦").yellow(),
@@ -64,7 +64,7 @@ impl Prompt for KPrompt {
         styled!(@(green)"╭─ ",@(blue)" ", @(blue,bold)top_pwd(), " ", @(yellow)git_info, "\n",@(green)"╰─ ", indicator," ")
     }
 
-    fn prompt_right(&self, line_ctx: &mut LineCtx) -> StyledBuf {
+    fn prompt_right(&self, line_ctx: &LineCtx) -> StyledBuf {
         let time_str = line_ctx
             .ctx
             .state
@@ -99,8 +99,7 @@ impl Prompt for KPrompt {
         };
         let local_time = Local::now();
         let formatted_time = local_time.format("%-I:%M %p").to_string();
-        //KEY LOGGER
-        styled!(command_status, " ", @(blue)time_str," ",formatted_time, " ",@(green)" ─╮","\n",@(green)"─╯")
+        styled!(command_status, " ", @(blue)time_str," ",formatted_time, " ",@(green)" ─╮","\n"," 0:", line_ctx.cb.cursor().to_string(),@(green)" ─╯")
     }
 }
 #[derive(Parser, Debug)]

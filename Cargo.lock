@@ -229,9 +229,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.4.12"
+version = "4.4.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dcfab8ba68f3668e89f6ff60f5b205cea56aa7b769451a59f34b8682f51c056d"
+checksum = "52bdc885e4cacc7f7c9eedc1ef6da641603180c783c41a15c264944deeaab642"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -258,7 +258,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.48",
 ]
 
 [[package]]
@@ -1174,9 +1174,9 @@ checksum = "925383efa346730478fb4838dbe9137d2a47675ad789c546d150a6e1dd4ab31c"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.74"
+version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2de98502f212cfcea8d0bb305bd0f49d7ebdd75b64ba0a68f937d888f4e0d6db"
+checksum = "907a61bd0f64c2f29cd1cf1dc34d05176426a3f504a78010f08416ddb7b13708"
 dependencies = [
  "unicode-ident",
 ]
@@ -1375,14 +1375,14 @@ checksum = "a3385e45322e8f9931410f01b3031ec534c3947d0e94c18049af4d9f9907d4e0"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.48",
 ]
 
 [[package]]
 name = "serde_json"
-version = "1.0.110"
+version = "1.0.111"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fbd975230bada99c8bb618e0c365c2eefa219158d5c6c29610fd09ff1833257"
+checksum = "176e46fa42316f18edd598015a5166857fc835ec732f5215eac6b7bdbf0a84f4"
 dependencies = [
  "itoa",
  "ryu",
@@ -1413,7 +1413,7 @@ dependencies = [
 [[package]]
 name = "shrs"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "anyhow",
  "anymap 1.0.0-beta.2",
@@ -1438,7 +1438,7 @@ dependencies = [
 [[package]]
 name = "shrs_cd_stack"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "shrs",
 ]
@@ -1446,7 +1446,7 @@ dependencies = [
 [[package]]
 name = "shrs_cd_tools"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "anymap 0.12.1",
  "derive_builder",
@@ -1461,7 +1461,7 @@ dependencies = [
 [[package]]
 name = "shrs_command_timer"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "shrs",
 ]
@@ -1469,7 +1469,7 @@ dependencies = [
 [[package]]
 name = "shrs_core"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "anyhow",
  "anymap 1.0.0-beta.2",
@@ -1493,7 +1493,7 @@ dependencies = [
 [[package]]
 name = "shrs_file_logger"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "log",
  "log4rs",
@@ -1514,7 +1514,7 @@ dependencies = [
 [[package]]
 name = "shrs_job"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "anyhow",
  "lazy_static",
@@ -1526,7 +1526,7 @@ dependencies = [
 [[package]]
 name = "shrs_lang"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "anyhow",
  "lalrpop",
@@ -1543,7 +1543,7 @@ dependencies = [
 [[package]]
 name = "shrs_line"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "anyhow",
  "arboard",
@@ -1562,7 +1562,7 @@ dependencies = [
 [[package]]
 name = "shrs_mux"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "clap",
  "shrs",
@@ -1571,7 +1571,7 @@ dependencies = [
 [[package]]
 name = "shrs_output_capture"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "shrs",
 ]
@@ -1588,7 +1588,7 @@ dependencies = [
 [[package]]
 name = "shrs_run_context"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "clap",
  "ron",
@@ -1598,7 +1598,7 @@ dependencies = [
 [[package]]
 name = "shrs_utils"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "anyhow",
  "crossterm",
@@ -1611,7 +1611,7 @@ dependencies = [
 [[package]]
 name = "shrs_vi"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#4782676c3cee696da20636be1e2c1a55cbe9f714"
+source = "git+https://github.com/MrPicklePinosaur/shrs#e8299aa5ffa0839c32417d28af78efa5825be54f"
 dependencies = [
  "anyhow",
  "lalrpop",
@@ -1712,9 +1712,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.46"
+version = "2.0.48"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89456b690ff72fddcecf231caedbe615c59480c93358a93dfae7fc29e3ebbf0e"
+checksum = "0f3531638e407dfc0814761abb7c00a5b54992b849452a0646b7f65c9f770f3f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1749,7 +1749,7 @@ checksum = "fa0faa943b50f3db30a20aa7e265dbc66076993efed8463e8de414e5d06d3471"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.48",
 ]
 
 [[package]]
@@ -1903,7 +1903,7 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.48",
  "wasm-bindgen-shared",
 ]
 
@@ -1925,7 +1925,7 @@ checksum = "f0eb82fcb7930ae6219a7ecfd55b217f5f0893484b7a13022ebb2b2bf20b5283"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.48",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
@@ -2116,9 +2116,9 @@ checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
 
 [[package]]
 name = "winnow"
-version = "0.5.31"
+version = "0.5.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97a4882e6b134d6c28953a387571f1acdd3496830d5e36c5e3a1075580ea641c"
+checksum = "8434aeec7b290e8da5c3f0d628cb0eac6cabcb31d14bb74f779a08109a5914d6"
 dependencies = [
  "memchr",
 ]
