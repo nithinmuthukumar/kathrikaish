@@ -1,6 +1,7 @@
 use ::crossterm::style::Color;
 use chrono::Local;
 use clap::Parser;
+use crossterm::style::Attribute;
 use shrs_cd_stack::CdStackPlugin;
 use shrs_cd_tools::{
     git::{self, commits_ahead_remote, commits_behind_remote, Git},
@@ -21,7 +22,7 @@ use shrs::{
     prelude::{
         builtin_cmdname_action, cmdname_action, cmdname_pred, styled, styled_buf::StyledBuf, Alias,
         Builtins, Context, DefaultCompleter, DefaultMenu, Env, HookFn, Hooks, LineBuilder, LineCtx,
-        LineMode, Pred, Prompt, Rule, Runtime, Shell, StartupCtx, Stylize,
+        LineMode, Pred, Prompt, Rule, Runtime, Shell, StartupCtx, Stylize, SyntaxHighlighter,
     },
     prompt::{hostname, top_pwd},
     ShellBuilder,
@@ -61,7 +62,19 @@ impl Prompt for KPrompt {
 
         let git_info = git_branch + commits_behind.as_str() + commits_ahead.as_str();
 
-        styled!(@(green)"╭─ ",@(blue)" ", @(blue,bold)top_pwd(), " ", @(yellow)git_info, "\n",@(green)"╰─ ", indicator," ")
+        styled!(
+            "╭─ ".with(line_ctx.sh.theme.green),
+            " ".with(line_ctx.sh.theme.blue),
+            top_pwd()
+                .with(line_ctx.sh.theme.blue)
+                .attribute(Attribute::Bold),
+            " ",
+            git_info.with(line_ctx.sh.theme.yellow),
+            "\n",
+            "╰─ ".with(line_ctx.sh.theme.green),
+            indicator,
+            " "
+        )
     }
 
     fn prompt_right(&self, line_ctx: &LineCtx) -> StyledBuf {
@@ -72,9 +85,9 @@ impl Prompt for KPrompt {
             .and_then(|x| x.command_time())
             .map(|x| {
                 if x.as_secs() < 1 {
-                    String::new()
+                    String::new().with(Color::Blue)
                 } else {
-                    format!("{:?}s", x.as_secs())
+                    format!("{:?}s", x.as_secs()).with(Color::Blue)
                 }
             });
         let status = line_ctx
@@ -93,13 +106,31 @@ impl Prompt for KPrompt {
 
         //COLOR NOT PRINTING
         let command_status = if status == 0 {
-            styled!(@(green)"")
+            styled!("".with(line_ctx.sh.theme.green))
         } else {
-            styled!(@(red)status.to_string())
+            styled!(status.to_string().with(line_ctx.sh.theme.red))
         };
         let local_time = Local::now();
-        let formatted_time = local_time.format("%-I:%M %p").to_string();
-        styled!(command_status, " ", @(blue)time_str," ",formatted_time, " ",@(green)" ─╮","\n"," 0:", line_ctx.cb.cursor().to_string(),@(green)" ─╯")
+        let formatted_time = local_time.format("%-I:%M %P").to_string();
+        styled!(
+            command_status,
+            " ",
+            time_str,
+            " ",
+            formatted_time
+                .with(line_ctx.sh.theme.dark_cyan)
+                .attribute(Attribute::Bold),
+            " ".with(line_ctx.sh.theme.dark_cyan),
+            " ─╮".with(line_ctx.sh.theme.green),
+            "\n",
+            " ".with(line_ctx.sh.theme.dark_cyan),
+            line_ctx
+                .cb
+                .cursor()
+                .to_string()
+                .with(line_ctx.sh.theme.dark_cyan),
+            " ─╯".with(line_ctx.sh.theme.green)
+        )
     }
 }
 #[derive(Parser, Debug)]
@@ -147,6 +178,7 @@ fn main() {
         .with_prompt(KPrompt)
         .with_completer(completer)
         .with_menu(menu)
+        .with_highlighter(SyntaxHighlighter::default())
         .build()
         .expect("Could not build line");
 
