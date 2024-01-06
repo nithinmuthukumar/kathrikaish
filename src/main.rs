@@ -64,10 +64,7 @@ impl Prompt for KPrompt {
 
         styled!(
             "╭─ ".with(line_ctx.sh.theme.green),
-            " ".with(line_ctx.sh.theme.blue),
-            top_pwd()
-                .with(line_ctx.sh.theme.blue)
-                .attribute(Attribute::Bold),
+            styled!(" ", top_pwd().attribute(Attribute::Bold)).with(line_ctx.sh.theme.blue),
             " ",
             git_info.with(line_ctx.sh.theme.yellow),
             "\n",
@@ -87,7 +84,7 @@ impl Prompt for KPrompt {
                 if x.as_secs() < 1 {
                     String::new().with(Color::Blue)
                 } else {
-                    format!("{:?}s", x.as_secs()).with(Color::Blue)
+                    format!("{:?}s", x.as_secs()).with(Color::Rgb { r: 255, g: 0, b: 0 })
                 }
             });
         let status = line_ctx
@@ -104,20 +101,24 @@ impl Prompt for KPrompt {
         //Project Context
         //
 
-        //COLOR NOT PRINTING
         let command_status = if status == 0 {
             styled!("".with(line_ctx.sh.theme.green))
         } else {
             styled!(status.to_string().with(line_ctx.sh.theme.red))
         };
-        let local_time = Local::now();
-        let formatted_time = local_time.format("%-I:%M %P").to_string();
+        let local_time = Local::now().format("%-I:%M %P").to_string();
+        let lt: Vec<&str> = local_time.split(":").collect();
+
         styled!(
             command_status,
             " ",
             time_str,
             " ",
-            formatted_time
+            lt[0]
+                .with(line_ctx.sh.theme.dark_cyan)
+                .attribute(Attribute::Bold),
+            ":".attribute(Attribute::SlowBlink),
+            lt[1]
                 .with(line_ctx.sh.theme.dark_cyan)
                 .attribute(Attribute::Bold),
             " ".with(line_ctx.sh.theme.dark_cyan),

@@ -1413,7 +1413,7 @@ dependencies = [
 [[package]]
 name = "shrs"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "anyhow",
  "anymap 1.0.0-beta.2",
@@ -1438,7 +1438,7 @@ dependencies = [
 [[package]]
 name = "shrs_cd_stack"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "shrs",
 ]
@@ -1446,7 +1446,7 @@ dependencies = [
 [[package]]
 name = "shrs_cd_tools"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "anymap 0.12.1",
  "derive_builder",
@@ -1461,7 +1461,7 @@ dependencies = [
 [[package]]
 name = "shrs_command_timer"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "shrs",
 ]
@@ -1469,7 +1469,7 @@ dependencies = [
 [[package]]
 name = "shrs_core"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "anyhow",
  "anymap 1.0.0-beta.2",
@@ -1493,7 +1493,7 @@ dependencies = [
 [[package]]
 name = "shrs_file_logger"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "log",
  "log4rs",
@@ -1514,7 +1514,7 @@ dependencies = [
 [[package]]
 name = "shrs_job"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "anyhow",
  "lazy_static",
@@ -1526,7 +1526,7 @@ dependencies = [
 [[package]]
 name = "shrs_lang"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "anyhow",
  "lalrpop",
@@ -1543,7 +1543,7 @@ dependencies = [
 [[package]]
 name = "shrs_line"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "anyhow",
  "arboard",
@@ -1562,7 +1562,7 @@ dependencies = [
 [[package]]
 name = "shrs_mux"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "clap",
  "shrs",
@@ -1571,7 +1571,7 @@ dependencies = [
 [[package]]
 name = "shrs_output_capture"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "shrs",
 ]
@@ -1588,7 +1588,7 @@ dependencies = [
 [[package]]
 name = "shrs_run_context"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "clap",
  "ron",
@@ -1598,7 +1598,7 @@ dependencies = [
 [[package]]
 name = "shrs_utils"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "anyhow",
  "crossterm",
@@ -1611,7 +1611,7 @@ dependencies = [
 [[package]]
 name = "shrs_vi"
 version = "0.0.3"
-source = "git+https://github.com/MrPicklePinosaur/shrs#615dfb39a98867df3b9b2f3d7cd81b8f45cc5437"
+source = "git+https://github.com/MrPicklePinosaur/shrs#b3b35db8731820f76d6a7057744d63b7407aa80c"
 dependencies = [
  "anyhow",
  "lalrpop",
@@ -2116,9 +2116,9 @@ checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
 
 [[package]]
 name = "winnow"
-version = "0.5.32"
+version = "0.5.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8434aeec7b290e8da5c3f0d628cb0eac6cabcb31d14bb74f779a08109a5914d6"
+checksum = "b7520bbdec7211caa7c4e682eb1fbe07abe20cee6756b6e00f537c82c11816aa"
 dependencies = [
  "memchr",
 ]
