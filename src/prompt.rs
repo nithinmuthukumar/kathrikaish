@@ -1,12 +1,26 @@
 use chrono::Local;
 use crossterm::style::{Attribute, Color, Stylize};
-use shrs::{
-    prelude::{styled, styled_buf::StyledBuf, LineCtx, LineMode, Prompt},
-    prompt::top_pwd,
-};
+use shrs::prelude::styled_buf::StyledBuf;
+use shrs::prelude::{styled_buf, LineCtx, LineMode, Prompt};
+use shrs::prompt::top_pwd;
 use shrs_cd_tools::git::{self, commits_ahead_remote, commits_behind_remote};
 use shrs_command_timer::CommandTimerState;
 use shrs_output_capture::OutputCaptureState;
+
+pub enum Showing {
+    Time,
+    Date,
+    Spotify,
+    Strava,
+}
+pub struct KPromptState {
+    showing: usize,
+}
+impl KPromptState {
+    pub fn cycle(&mut self) {
+        self.showing = (self.showing + 1) % 4;
+    }
+}
 
 pub struct KPrompt;
 
@@ -42,13 +56,13 @@ impl Prompt for KPrompt {
 
         let git_info = git_branch + commits_behind.as_str() + commits_ahead.as_str();
 
-        styled!(
-            "╭─ ".with(line_ctx.sh.theme.green),
-            styled!(" ", top_pwd().attribute(Attribute::Bold)).with(line_ctx.sh.theme.blue),
+        styled_buf!(
+            "╭─ ".green(),
+            styled_buf!(" ", top_pwd().bold()).blue(),
             " ",
-            git_info.with(line_ctx.sh.theme.yellow),
+            git_info.yellow(),
             "\n",
-            "╰─ ".with(line_ctx.sh.theme.green),
+            "╰─ ".green(),
             indicator,
             " "
         )
@@ -62,7 +76,7 @@ impl Prompt for KPrompt {
             .and_then(|x| x.command_time())
             .map(|x| {
                 if x.as_secs() < 1 {
-                    String::new().with(Color::Blue)
+                    String::new().blue()
                 } else {
                     format!("{:?}s", x.as_secs()).with(Color::Rgb { r: 255, g: 0, b: 0 })
                 }
@@ -82,35 +96,24 @@ impl Prompt for KPrompt {
         //
 
         let command_status = if status == 0 {
-            styled!("".with(line_ctx.sh.theme.green))
+            styled_buf!("".green())
         } else {
-            styled!(status.to_string().with(line_ctx.sh.theme.red))
+            styled_buf!(status.to_string().red())
         };
         let local_time = Local::now().format("%-I:%M %P").to_string();
-        let lt: Vec<&str> = local_time.split(":").collect();
 
-        styled!(
+        styled_buf!(
             command_status,
             " ",
             time_str,
             " ",
-            lt[0]
-                .with(line_ctx.sh.theme.dark_cyan)
-                .attribute(Attribute::Bold),
-            ":".attribute(Attribute::SlowBlink),
-            lt[1]
-                .with(line_ctx.sh.theme.dark_cyan)
-                .attribute(Attribute::Bold),
-            " ".with(line_ctx.sh.theme.dark_cyan),
-            " ─╮".with(line_ctx.sh.theme.green),
+            local_time.dark_cyan().bold(),
+            " ".dark_cyan(),
+            " ─╮".green(),
             "\n",
-            " ".with(line_ctx.sh.theme.dark_cyan),
-            line_ctx
-                .cb
-                .cursor()
-                .to_string()
-                .with(line_ctx.sh.theme.dark_cyan),
-            " ─╯".with(line_ctx.sh.theme.green)
+            " ".dark_cyan(),
+            line_ctx.cb.cursor().to_string().dark_cyan(),
+            " ─╯".green()
         )
     }
 }

@@ -1,9 +1,13 @@
-use ::crossterm::style::Color;
 use chrono::Local;
 use clap::Parser;
-use crossterm::style::{Attribute, ContentStyle, Stylize};
+use crossterm::style::Color;
+use crossterm::{
+    event::KeyCode,
+    style::{Attribute, ContentStyle, Stylize},
+};
 use prompt::KPrompt;
-use shrs_cd_stack::CdStackPlugin;
+use sfx_hooks::{command_finish_sfx, startup_sfx, switch_mode_sfx, AudioPlugin};
+use shrs_cd_stack::{CdStackPlugin, CdStackState};
 use shrs_cd_tools::{
     git::{self, commits_ahead_remote, commits_behind_remote, Git},
     DirParsePlugin, DirParseState,
@@ -13,6 +17,7 @@ use shrs_insulter::prelude::*;
 use shrs_mux::MuxPlugin;
 use shrs_output_capture::{OutputCapturePlugin, OutputCaptureState};
 use shrs_presence::PresencePlugin;
+use shrs_rhai_completion::CompletionsPlugin;
 use shrs_run_context::RunContextPlugin;
 use std::{
     fs::{self, File},
@@ -25,6 +30,7 @@ use std::{
 
 use shrs::{
     anyhow,
+    completion::Completer,
     history::FileBackedHistory,
     keybindings,
     prelude::{
@@ -32,9 +38,13 @@ use shrs::{
         DefaultCompleter, DefaultMenu, Env, HookFn, Hooks, LineBuilder, Pred, Rule, Runtime, Shell,
         StartupCtx, SyntaxHighlighter,
     },
-    ShellBuilder,
+    shell::set_working_dir,
+    shell_config::ShellBuilder,
 };
-pub mod prompt;
+
+use crate::prompt::KPromptState;
+mod prompt;
+mod sfx_hooks;
 
 #[derive(Parser, Debug)]
 #[command(author="Nithin Muthukumar", version, about = "Nithin's shell", long_about = None)]
@@ -50,7 +60,30 @@ fn main() {
     // TODO ignore errors for now (we dont care if dir already exists)
     fs::create_dir_all(config_dir.clone());
 
-    let keybinding = keybindings! {|_sh,_ctx,_rt| "C-l"=>("Clear the screen", {Command::new("clear").spawn().unwrap() })};
+    let keybinding = keybindings! {|sh,ctx,rt|
+        "C-l"=>("Clear the screen", {Command::new("clear").spawn().unwrap() }),
+        "C-p" => ("Move up one in the command history", {
+            if let Some(state) = ctx.state.get_mut::<CdStackState>() {
+                if let Some(new_path) = state.down() {
+                    set_working_dir(sh, ctx, rt, &new_path, false).unwrap();
+                }
+            }
+        }),
+        "C-n" => ("Move down one in the command history", {
+            if let Some(state) = ctx.state.get_mut::<CdStackState>() {
+                if let Some(new_path) = state.up() {
+                    set_working_dir(sh, ctx, rt, &new_path, false).unwrap();
+                }
+            }
+        }),
+        "C-<tab>" => ("Cycle prompt", {
+            if let Some(state) = ctx.state.get_mut::<KPromptState>(){
+                state.cycle();
+            }
+
+        })
+
+    };
     let alias = Alias::from_iter([("l", "ls"), ("g", "git"), ("v", "nvim")]);
     let mut env = Env::default();
     env.load().unwrap();
@@ -79,7 +112,6 @@ fn main() {
 
     let readline = LineBuilder::default()
         .with_prompt(KPrompt)
-        .with_completer(completer)
         .with_menu(menu)
         .with_highlighter(SyntaxHighlighter::default())
         .build()
@@ -101,6 +133,9 @@ fn main() {
 
     let mut hooks = Hooks::new();
     hooks.insert(startup_msg);
+    hooks.insert(switch_mode_sfx);
+    hooks.insert(command_finish_sfx);
+    hooks.insert(startup_sfx);
 
     let mut insult_string = String::new();
     File::open(config_dir.as_path().join("insults.json"))
@@ -111,23 +146,28 @@ fn main() {
         serde_json::from_str(&insult_string).expect("Unable to deserialize JSON");
 
     let shell = ShellBuilder::default()
+        .with_completer(completer)
         .with_readline(readline)
         .with_alias(alias)
         .with_hooks(hooks)
         .with_keybinding(keybinding)
         .with_history(history)
+        .with_plugin(AudioPlugin)
         .with_plugin(MuxPlugin::new())
         .with_plugin(OutputCapturePlugin)
         .with_plugin(CommandTimerPlugin)
         .with_plugin(RunContextPlugin::default())
-        // .with_plugin(CdStackPlugin)
+        .with_plugin(CdStackPlugin)
+        .with_plugin(CompletionsPlugin)
         .with_plugin(InsulterPlugin::new(
             insults,
             1.,
             false,
             ContentStyle::new().with(Color::DarkRed),
         ))
-        .with_plugin(PresencePlugin)
+        .with_plugin(PresencePlugin::new(
+            "https://github.com/nithinmuthukumar/kathrikaish".to_string(),
+        ))
         // .with_plugin(DirParsePlugin::new())
         .build()
         .expect("Could not build shell");
