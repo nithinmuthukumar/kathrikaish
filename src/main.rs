@@ -1,32 +1,27 @@
-use chrono::Local;
+
 use clap::Parser;
 use crossterm::style::Color;
 use crossterm::{
-    event::KeyCode,
-    style::{Attribute, ContentStyle, Stylize},
+    style::{ContentStyle, Stylize},
 };
 use prompt::KPrompt;
 use sfx_hooks::{command_finish_sfx, startup_sfx, switch_mode_sfx, AudioPlugin};
 use shrs::shell::{set_working_dir, ShellBuilder};
 use shrs_cd_stack::{CdStackPlugin, CdStackState};
 use shrs_cd_tools::{
-    git::{self, commits_ahead_remote, commits_behind_remote, Git},
-    DirParsePlugin, DirParseState,
+    DirParsePlugin,
 };
-use shrs_command_timer::{CommandTimerPlugin, CommandTimerState};
+use shrs_command_timer::{CommandTimerPlugin};
 use shrs_insulter::prelude::*;
 use shrs_mux::MuxPlugin;
-use shrs_output_capture::{OutputCapturePlugin, OutputCaptureState};
+use shrs_output_capture::{OutputCapturePlugin};
 use shrs_presence::PresencePlugin;
 use shrs_rhai_completion::CompletionsPlugin;
 use shrs_run_context::RunContextPlugin;
 use std::{
     fs::{self, File},
     io::Read,
-    path::PathBuf,
     process::Command,
-    thread::sleep,
-    time::Duration,
 };
 
 use shrs::{

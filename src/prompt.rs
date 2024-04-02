@@ -1,5 +1,5 @@
 use chrono::Local;
-use crossterm::style::{Attribute, Color, Stylize};
+use crossterm::style::{Color, Stylize};
 use shrs::prelude::styled_buf::StyledBuf;
 use shrs::prelude::{styled_buf, LineMode, Prompt};
 use shrs::prompt::top_pwd;

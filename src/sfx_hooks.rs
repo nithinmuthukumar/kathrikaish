@@ -6,13 +6,13 @@ use std::{
 };
 
 use rodio::{
-    source::{Buffered, SamplesConverter},
-    Decoder, OutputStream, OutputStreamHandle, Sink, Source,
+    source::{Buffered},
+    Decoder, OutputStream, Sink, Source,
 };
 use shrs::anyhow::Result;
 use shrs::anyhow::{anyhow, Context as AnyhowContext};
 use shrs::prelude::*;
-use shrs_command_timer::CommandTimerState;
+
 
 pub type ShrsAudio = Buffered<Decoder<BufReader<File>>>;
 
@@ -92,9 +92,9 @@ pub fn command_finish_sfx(
 
 pub fn switch_mode_sfx(
     _sh: &Shell,
-    ctx: &mut Context,
+    _ctx: &mut Context,
     _rt: &mut Runtime,
-    lms_ctx: &LineModeSwitchCtx,
+    _lms_ctx: &LineModeSwitchCtx,
 ) -> anyhow::Result<()> {
     //     if let Some(stream) = ctx.state.get::<AudioStreamState>() {
     //         match lms_ctx.line_mode {
