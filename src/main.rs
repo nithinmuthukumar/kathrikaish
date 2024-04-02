@@ -7,6 +7,7 @@ use crossterm::{
 };
 use prompt::KPrompt;
 use sfx_hooks::{command_finish_sfx, startup_sfx, switch_mode_sfx, AudioPlugin};
+use shrs::shell::{set_working_dir, ShellBuilder};
 use shrs_cd_stack::{CdStackPlugin, CdStackState};
 use shrs_cd_tools::{
     git::{self, commits_ahead_remote, commits_behind_remote, Git},
@@ -38,8 +39,6 @@ use shrs::{
         DefaultCompleter, DefaultMenu, Env, HookFn, Hooks, LineBuilder, Pred, Rule, Runtime, Shell,
         StartupCtx, SyntaxHighlighter,
     },
-    shell::set_working_dir,
-    shell_config::ShellBuilder,
 };
 
 use crate::prompt::KPromptState;
@@ -60,24 +59,24 @@ fn main() {
     // TODO ignore errors for now (we dont care if dir already exists)
     fs::create_dir_all(config_dir.clone());
 
-    let keybinding = keybindings! {|sh,ctx,rt|
+    let keybinding = keybindings! {|line|
         "C-l"=>("Clear the screen", {Command::new("clear").spawn().unwrap() }),
         "C-p" => ("Move up one in the command history", {
-            if let Some(state) = ctx.state.get_mut::<CdStackState>() {
+            if let Some(state) = line.ctx.state.get_mut::<CdStackState>() {
                 if let Some(new_path) = state.down() {
-                    set_working_dir(sh, ctx, rt, &new_path, false).unwrap();
+                    set_working_dir(line.sh, line.ctx, line.rt, &new_path, false).unwrap();
                 }
             }
         }),
         "C-n" => ("Move down one in the command history", {
-            if let Some(state) = ctx.state.get_mut::<CdStackState>() {
+            if let Some(state) = line.ctx.state.get_mut::<CdStackState>() {
                 if let Some(new_path) = state.up() {
-                    set_working_dir(sh, ctx, rt, &new_path, false).unwrap();
+                    set_working_dir(line.sh, line.ctx, line.rt, &new_path, false).unwrap();
                 }
             }
         }),
         "C-<tab>" => ("Cycle prompt", {
-            if let Some(state) = ctx.state.get_mut::<KPromptState>(){
+            if let Some(state) = line.ctx.state.get_mut::<KPromptState>(){
                 state.cycle();
             }
 
@@ -168,7 +167,7 @@ fn main() {
         .with_plugin(PresencePlugin::new(
             "https://github.com/nithinmuthukumar/kathrikaish".to_string(),
         ))
-        // .with_plugin(DirParsePlugin::new())
+        .with_plugin(DirParsePlugin::new())
         .build()
         .expect("Could not build shell");
 

@@ -4,6 +4,7 @@ author = "Nithin Muthukumar"
 about = "Nithin's shell"
 version = "0.1.0"
 edition = "2021"
+description = "Opinionated shell built using shrs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

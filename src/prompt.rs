@@ -1,8 +1,9 @@
 use chrono::Local;
 use crossterm::style::{Attribute, Color, Stylize};
 use shrs::prelude::styled_buf::StyledBuf;
-use shrs::prelude::{styled_buf, LineCtx, LineMode, Prompt};
+use shrs::prelude::{styled_buf, LineMode, Prompt};
 use shrs::prompt::top_pwd;
+use shrs::readline::LineStateBundle;
 use shrs_cd_tools::git::{self, commits_ahead_remote, commits_behind_remote};
 use shrs_command_timer::CommandTimerState;
 use shrs_output_capture::OutputCaptureState;
@@ -26,8 +27,8 @@ pub struct KPrompt;
 
 #[allow(unused_variables)]
 impl Prompt for KPrompt {
-    fn prompt_left(&self, line_ctx: &LineCtx) -> StyledBuf {
-        let indicator = match line_ctx.mode() {
+    fn prompt_left(&self, state: &LineStateBundle) -> StyledBuf {
+        let indicator = match state.line.mode() {
             LineMode::Insert => String::from("🍆").cyan(),
             LineMode::Normal => String::from("💦").yellow(),
         };
@@ -68,8 +69,8 @@ impl Prompt for KPrompt {
         )
     }
 
-    fn prompt_right(&self, line_ctx: &LineCtx) -> StyledBuf {
-        let time_str = line_ctx
+    fn prompt_right(&self, state: &LineStateBundle) -> StyledBuf {
+        let time_str = state
             .ctx
             .state
             .get::<CommandTimerState>()
@@ -81,7 +82,7 @@ impl Prompt for KPrompt {
                     format!("{:?}s", x.as_secs()).with(Color::Rgb { r: 255, g: 0, b: 0 })
                 }
             });
-        let status = line_ctx
+        let status = state
             .ctx
             .state
             .get::<OutputCaptureState>()
@@ -112,7 +113,7 @@ impl Prompt for KPrompt {
             " ─╮".green(),
             "\n",
             " ".dark_cyan(),
-            line_ctx.cb.cursor().to_string().dark_cyan(),
+            state.line.cb.cursor().to_string().dark_cyan(),
             " ─╯".green()
         )
     }

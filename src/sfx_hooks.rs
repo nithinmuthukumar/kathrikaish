@@ -7,17 +7,17 @@ use std::{
 
 use rodio::{
     source::{Buffered, SamplesConverter},
-    Decoder, OutputStream, OutputStreamHandle, Source,
+    Decoder, OutputStream, OutputStreamHandle, Sink, Source,
 };
 use shrs::anyhow::Result;
 use shrs::anyhow::{anyhow, Context as AnyhowContext};
 use shrs::prelude::*;
 use shrs_command_timer::CommandTimerState;
 
-pub type ShrsAudio = Buffered<SamplesConverter<Decoder<BufReader<File>>, f32>>;
+pub type ShrsAudio = Buffered<Decoder<BufReader<File>>>;
 
 pub struct AudioStreamState {
-    stream_handle: OutputStreamHandle,
+    sink: Sink,
     // Need to store so it doesn't go out of scope
     _stream: OutputStream,
 
@@ -36,19 +36,21 @@ impl AudioStreamState {
                         .ok_or_else(|| anyhow!("No filename"))?
                         .to_string_lossy()
                         .to_string(),
-                    source.convert_samples::<f32>().buffered(),
+                    source.buffered(),
                 );
             }
         }
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
 
         Ok(AudioStreamState {
-            stream_handle,
+            sink: Sink::try_new(&stream_handle)?,
             _stream,
             audios,
         })
     }
-    pub fn play_sound(&self, file_name: &str) -> anyhow::Result<()> {
+    pub fn play_sound(&self, file_name: &str, volume: f32) -> anyhow::Result<()> {
+        self.sink.set_volume(volume);
+
         // Check if the audio file exists in the HashMap
         let audio_buffer = self
             .audios
@@ -56,9 +58,8 @@ impl AudioStreamState {
             .with_context(|| format!("Audio file '{}' not found", file_name))?;
 
         // Attempt to play the audio
-        self.stream_handle
-            .play_raw(audio_buffer.to_owned())
-            .with_context(|| "Failed to play audio")?;
+
+        self.sink.append(audio_buffer.to_owned());
 
         Ok(())
     }
@@ -75,50 +76,44 @@ impl Plugin for AudioPlugin {
 }
 
 pub fn command_finish_sfx(
-    sh: &Shell,
+    _sh: &Shell,
     ctx: &mut Context,
-    rt: &mut Runtime,
+    _rt: &mut Runtime,
     ac_ctx: &AfterCommandCtx,
 ) -> anyhow::Result<()> {
     if let Some(stream) = ctx.state.get::<AudioStreamState>() {
-        if let Some(timer) = ctx.state.get::<CommandTimerState>() {
-            if timer.command_time().map_or_else(|| 0, |t| t.as_secs()) > 3 {
-                stream.play_sound("complete.mp3")?;
-            }
-        }
+        match ac_ctx.cmd_output.status.success() {
+            true => stream.play_sound("success.wav", 0.3)?,
+            false => stream.play_sound("error.wav", 0.3)?,
+        };
     }
     Ok(())
 }
 
 pub fn switch_mode_sfx(
-    sh: &Shell,
+    _sh: &Shell,
     ctx: &mut Context,
-    rt: &mut Runtime,
+    _rt: &mut Runtime,
     lms_ctx: &LineModeSwitchCtx,
 ) -> anyhow::Result<()> {
-    if let Some(stream) = ctx.state.get::<AudioStreamState>() {
-        stream.play_sound("mode_switch.wav")?;
-    }
-
-    // match lms_ctx.line_mode {
-    //     shrs::readline::LineMode::Insert => todo!(),
-    //     shrs::readline::LineMode::Normal => todo!(),
-    // }
+    //     if let Some(stream) = ctx.state.get::<AudioStreamState>() {
+    //         match lms_ctx.line_mode {
+    //             shrs::readline::LineMode::Insert => stream.play_sound("on.wav", 0.5)?,
+    //             shrs::readline::LineMode::Normal => stream.play_sound("off.wav", 0.5)?,
+    //         };
+    //     }
+    //
     Ok(())
 }
 pub fn startup_sfx(
-    sh: &Shell,
+    _sh: &Shell,
     ctx: &mut Context,
-    rt: &mut Runtime,
-    lms_ctx: &StartupCtx,
+    _rt: &mut Runtime,
+    _lms_ctx: &StartupCtx,
 ) -> anyhow::Result<()> {
     if let Some(stream) = ctx.state.get::<AudioStreamState>() {
-        stream.play_sound("meow.wav")?;
+        stream.play_sound("meow.wav", 0.5)?;
     }
 
-    // match lms_ctx.line_mode {
-    //     shrs::readline::LineMode::Insert => todo!(),
-    //     shrs::readline::LineMode::Normal => todo!(),
-    // }
     Ok(())
 }
